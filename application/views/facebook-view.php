@@ -28,5 +28,10 @@
 				<?php var_dump($result);?>
 			</pre>
 		<?php endif;?>
+		<div id="fb-root"></div>
+		<script src="http://connect.facebook.net/en_US/all.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			FB.init({appId: '<?=facebook_app_id()?>', status: true, cookie: true, xfbml: true});
+		</script>
 	</body>
 </html>
