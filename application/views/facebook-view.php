@@ -32,6 +32,9 @@
 		<script src="http://connect.facebook.net/en_US/all.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			FB.init({appId: '<?=facebook_app_id()?>', status: true, cookie: true, xfbml: true});
+			FB.Event.subscribe('auth.login', function(response) {
+				window.location.reload();
+			});
 		</script>
 	</body>
 </html>
