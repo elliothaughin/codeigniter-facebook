@@ -21,7 +21,7 @@
 		
 		private static $_curl_opts = array(
 			CURLOPT_CONNECTTIMEOUT => 10,
-			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_TIMEOUT        => 60,
 			CURLOPT_USERAGENT      => 'codeigniter-facebook-2.0'
 		);
