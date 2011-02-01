@@ -4,9 +4,6 @@
 		function __construct()
 		{
 			parent::Controller();
-			
-			$this->load->add_package_path(APPPATH.'third_party/haughin/codeigniter-facebook/');
-			$this->load->library('facebook_connect');
 		}
 		
 		function index()
@@ -17,6 +14,7 @@
 			// 
 			// For more details see: http://developers.facebook.com/docs/opengraph
 			
+			$this->load->library('facebook');
 			
 			$opengraph = 	array(
 								'type'				=> 'website',
@@ -28,6 +26,6 @@
 			
 			$this->load->vars('opengraph', $opengraph);
 			
-			$this->load->view('facebook-view');
+			$this->load->view('facebook_view');
 		}
 	}

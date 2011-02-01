@@ -15,17 +15,8 @@
 	function facebook_picture($who = 'me')
 	{
 		$ci =& get_instance();
-
-		$img = $ci->facebook_connect->get_domain_url('graph').$who.'/picture';
-
-		$cookie = $ci->facebook_connect->get_cookie();
 		
-		if ( !empty($cookie['access_token']) )
-		{
-			$img .= '?access_token='.$cookie['access_token'];
-		}
-		
-		return $img;
+		return $ci->facebook->append_token($ci->config->item('facebook_api_url').$who.'/picture');
 	}
 	
 	function facebook_opengraph_meta($opengraph)
