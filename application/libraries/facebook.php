@@ -414,9 +414,9 @@
 			
 			if ( $token->access_token )
 			{
-				if ( !empty($this->_token->expires) )
+				if ( !empty($token->expires) )
 				{
-					$this->_token->expires = strval(time() + intval($this->_token->expires));
+					$token->expires = strval(time() + intval($token->expires));
 				}
 				
 				$this->_set('token', $token);
