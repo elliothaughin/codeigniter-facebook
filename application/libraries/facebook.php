@@ -76,6 +76,11 @@
 		{
 			return $this->session->append_token($url);
 		}
+		
+		public function set_callback($url)
+		{
+			return $this->session->set_callback($url);
+		}
 	}
 	
 	class facebookConnection {
@@ -254,19 +259,15 @@
 			if ( is_string($this->__resp->data ) )
 			{
 				parse_str($this->__resp->data, $result);
+				$this->__resp->data = (object) $result;
 			}
-
-			foreach($result as $k => $v)
-			{
-				$this->$k = $v;
-			}
-
+			
 			if ( $name === '_result')
 			{
-				return $result;
+				return $this->__resp->data;
 			}
-
-			return $result[$name];
+			
+			return $this->__resp->data->$name;
 		}
 	}
 	
@@ -286,13 +287,9 @@
 		
 		private $_api_key;
 		private $_api_secret;
-		private $_token 		= NULL;
 		private $_token_url 	= 'oauth/access_token';
 		private $_user_url		= 'me';
-		private $_token_key 	= 'facebook_token';
-		private $_callback_key 	= 'facebook_callback';
-		private $_user_key 		= 'facebook_user';
-		private $_user 			= NULL;
+		private $_data			= array();
 		
 		function __construct()
 		{
@@ -303,11 +300,17 @@
 			
 			$this->_token_url 	= $this->_obj->config->item('facebook_api_url').$this->_token_url;
 			$this->_user_url 	= $this->_obj->config->item('facebook_api_url').$this->_user_url;
-			$this->_scope 		= $this->_obj->config->item('facebook_default_scope');
+			
+			$this->_set('scope', $this->_obj->config->item('facebook_default_scope'));
 			
 			$this->connection = new facebookConnection();
 			
-			$this->logged_in();
+			if ( !$this->logged_in() )
+			{
+				 // Initializes the callback to this page URL.
+				$this->set_callback();
+			}
+			
 		}
 		
 		public function logged_in()
@@ -317,21 +320,26 @@
 		
 		public function logout()
 		{
-			$this->_unset_token();
+			$this->_unset('token');
+			$this->_unset('user');
 		}
 		
 		public function login_url($scope = NULL)
 		{
-			$url = "http://www.facebook.com/dialog/oauth?client_id=".$this->_api_key.'&redirect_uri='.urlencode(current_url());
+			$url = "http://www.facebook.com/dialog/oauth?client_id=".$this->_api_key.'&redirect_uri='.urlencode($this->_get('callback'));
 			
 			if ( empty($scope) )
 			{
-				$scope = $this->_scope;
-				
-				if ( !empty($scope) )
-				{
-					$url .= '&scope='.$scope;
-				}
+				$scope = $this->_get('scope');
+			}
+			else
+			{
+				$this->_set('scope', $scope);
+			}
+			
+			if ( !empty($scope) )
+			{
+				$url .= '&scope='.$scope;
 			}
 			
 			return $url;
@@ -342,34 +350,21 @@
 			$this->logout();
 			
 			$url = $this->login_url($scope);
-			$this->_obj->session->set_userdata($this->_callback_key, $this->_strip_query());
-			
+				
 			return redirect($url);
-		}
-		
-		private function _get_callback()
-		{
-			$callback_url = $this->_obj->session->userdata($this->_callback_key);
-			
-			if ( empty($callback_url) )
-			{
-				$callback_url = $this->_strip_query();
-			}
-			
-			return $callback_url;
 		}
 		
 		public function get()
 		{
-			$token = $this->_get_token();
+			$token = $this->_find_token();
 			if ( empty($token) ) return NULL;
 			
-			// $user = $this->_obj->session->userdata($this->_user_key);
-			// if ( !empty($user) ) return $user;
+			$user = $this->_get('user');
+			if ( !empty($user) ) return $user;
 			
 			try 
 			{
-				$user = $this->connection->get($this->_user_url.'?'.$token);
+				$user = $this->connection->get($this->_user_url.'?'.$this->_token_string());
 			}
 			catch ( facebookException $e )
 			{
@@ -377,30 +372,32 @@
 				return NULL;
 			}
 			
-			$this->_set_user($user->__resp->data);
-			return $this->_user;
+			$this->_set('user', $user);
+			return $user;
 		}
 		
-		private function _get_token()
+		private function _find_token()
 		{
-			if ( $this->_token !== NULL ) return $this->_token;
-			
-			$token = $this->_obj->session->userdata($this->_token_key);
+			$token = $this->_get('token');
 			
 			if ( !empty($token) )
 			{
-				$this->_token = $token;
-				return $this->_token;
+				if ( !empty($token->expires) && intval($token->expires) >= time() )
+				{
+					// Problem, token is expired!
+					return $this->logout();
+				}
+				
+				$this->_set('token', $token);
+				return $this->_token_string();
 			}
 			
 			if ( !isset($_GET['code']) )
 			{
-				$this->logout();
-				return NULL;
+				return $this->logout();
 			}
 			
-			$callback_url = $this->_get_callback();
-			$token_url = $this->_token_url.'?client_id='.$this->_api_key."&redirect_uri=".urlencode($callback_url)."&client_secret=".$this->_api_secret."&code=".$_GET['code'];
+			$token_url = $this->_token_url.'?client_id='.$this->_api_key."&redirect_uri=".urlencode($this->_get('callback'))."&client_secret=".$this->_api_secret."&code=".$_GET['code'];
 			
 			try 
 			{
@@ -409,43 +406,72 @@
 			catch ( facebookException $e )
 			{
 				$this->logout();
+				redirect($this->_strip_query());
 				return NULL;
 			}
 			
+			$this->_unset('callback');
+			
 			if ( $token->access_token )
 			{
-				$token_string = 'access_token='.$token->access_token;
-				$this->_set_token($token_string);
+				if ( !empty($this->_token->expires) )
+				{
+					$this->_token->expires = strval(time() + intval($this->_token->expires));
+				}
 				
+				$this->_set('token', $token);
 				redirect($this->_strip_query());
 			}
 			
-			return $this->_token;
+			return $this->_token_string();
 		}
 		
-		private function _set_token($token = NULL)
+		private function _get($key)
 		{
-			if ( $token !== NULL )
+			if ( isset($this->_data[$key]) && $this->_data[$key] !== NULL) return $this->_data[$key];
+			
+			$data = $this->_obj->session->userdata('_facebook_'.$key);
+			
+			if ( !empty($data) )
 			{
-				$this->_token = $token;
-				$this->_obj->session->set_userdata($this->_token_key, $token);
+				$this->_set($key, $data);
 			}
+			
+			return $data;
+		}
+		
+		private function _set($key, $data)
+		{
+			$key = '_facebook_'.$key;
+			
+			$this->_data[$key] = $data;
+			
+			$this->_obj->session->set_userdata($key, $this->_data[$key]);
+		}
+		
+		private function _unset($key)
+		{
+			$key = '_facebook_'.$key;
+			
+			$this->_data[$key] = NULL;
+			$this->_obj->session->unset_userdata($key);
+		}
+		
+		public function set_callback($url = NULL)
+		{
+			$this->_set('callback', $this->_strip_query($url));
+		}
+		
+		private function _token_string()
+		{
+			return 'access_token='.$this->_get('token')->access_token;
 		}
 		
 		public function append_token($url)
 		{
-			if ( $this->_get_token() ) $url .= '?'.$this->_get_token();
+			if ( $this->_get('token') ) $url .= '?'.$this->_token_string();
 			
 			return $url;
-		}
-		
-		private function _unset_token()
-		{
-			$this->_token = NULL;
-			$this->_obj->session->unset_userdata($this->_token_key);
-			$this->_obj->session->unset_userdata($this->_callback_key);
-			
-			$this->_unset_user();
 		}
 		
 		private function _strip_query($url = NULL)
@@ -458,21 +484,5 @@
 			
 			$parts = explode('?', $url);
 			return $parts[0];
-		}
-		
-		
-		private function _set_user($user = NULL)
-		{
-			if ( $user !== NULL )
-			{
-				$this->_user = $user;
-				$this->_obj->session->set_userdata($this->_user_key, $user);
-			}
-		}
-		
-		private function _unset_user()
-		{
-			$this->_user = NULL;
-			$this->_obj->session->unset_userdata($this->_user_key);
 		}
 	}
