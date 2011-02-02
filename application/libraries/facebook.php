@@ -359,8 +359,8 @@
 			$token = $this->_find_token();
 			if ( empty($token) ) return NULL;
 			
-			$user = $this->_get('user');
-			if ( !empty($user) ) return $user;
+			// $user = $this->_get('user');
+			// if ( !empty($user) ) return $user;
 			
 			try 
 			{
@@ -372,7 +372,7 @@
 				return NULL;
 			}
 			
-			$this->_set('user', $user);
+			// $this->_set('user', $user);
 			return $user;
 		}
 		
