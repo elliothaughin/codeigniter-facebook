@@ -6,6 +6,7 @@
 		private $_api_key;
 		private $_api_secret;
 		private $_errors = array();
+		private $_enable_debug = FALSE;
 		
 		function __construct()
 		{
@@ -39,22 +40,41 @@
 			return $this->session->login_url($scope);
 		}
 		
+		public function logout()
+		{
+			return $this->session->logout();
+		}
+		
 		public function user()
 		{
 			return $this->session->get();
 		}
 		
-		public function call($uri)
+		public function call($method, $uri, $data = array())
 		{
 			$response = FALSE;
 			
 			try
 			{
-				$response = $this->connection->get($this->append_token($this->_api_url.$uri));
+				switch ( $method )
+				{
+					case 'get':
+						$response = $this->connection->get($this->append_token($this->_api_url.$uri));
+					break;
+					
+					case 'post':
+						$response = $this->connection->post($this->append_token($this->_api_url.$uri), $data);
+					break;
+				}
 			}
 			catch (facebookException $e)
 			{
 				$this->_errors[] = $e;
+				
+				if ( $this->_enable_debug )
+				{
+					echo $e;
+				}
 			}
 			
 			return $response;
@@ -80,6 +100,13 @@
 		public function set_callback($url)
 		{
 			return $this->session->set_callback($url);
+		}
+		
+		public function enable_debug($debug = TRUE)
+		{
+			$this->_enable_debug = (bool) $debug;
+			
+			
 		}
 	}
 	

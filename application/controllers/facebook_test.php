@@ -1,9 +1,9 @@
 <?php
-	class Facebook_test extends Controller {
+	class Facebook_test extends CI_Controller {
 		
 		function __construct()
 		{
-			parent::Controller();
+			parent::__construct();
 		}
 		
 		function index()
@@ -33,6 +33,23 @@
 
 				// You can alternatively create links in your HTML using
 				// $this->facebook->login_url(); as the href parameter.
+			}
+			else
+			{
+				$this->facebook->enable_debug(TRUE);
+				
+				// The user is logged in, so we can make API requests on their behalf
+				
+				$event_id = '111111111111';
+				
+				$event = $this->facebook->call('get', $event_id);
+				
+				// Set the user as 'attending'
+				// Requires 'scope' to be include 'rsvp_event' in facebook config file.
+				
+				$request = $this->facebook->call('post', $event_id.'/attending');
+				
+				var_dump($request);
 			}
 
 			// We can use the open graph place meta data in the head.
