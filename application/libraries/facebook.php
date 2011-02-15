@@ -376,6 +376,8 @@
 		{
 			$this->logout();
 			
+			if ( !$this->_get('callback') ) $this->_set('callback', current_url());
+			
 			$url = $this->login_url($scope);
 				
 			return redirect($url);
@@ -424,12 +426,9 @@
 				return $this->logout();
 			}
 			
-			$token_url = $this->_token_url.'?client_id='.$this->_api_key."&client_secret=".$this->_api_secret."&code=".$_GET['code'];
+			if ( !$this->_get('callback') ) $this->_set('callback', current_url());
 			
-			if ( $this->_get('callback') )
-			{
-				$token_url .= '&redirect_uri='.urlencode($this->_get('callback'));
-			}
+			$token_url = $this->_token_url.'?client_id='.$this->_api_key."&client_secret=".$this->_api_secret."&code=".$_GET['code'].'&redirect_uri='.urlencode($this->_get('callback'));
 			
 			try 
 			{
