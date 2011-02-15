@@ -17,7 +17,7 @@
 			// Then when you want to grab a fresh copy of the code, you can just run a git pull 
 			// on your codeigniter-facebook directory.
 
-			$this->load->add_package_path('/Users/elliot/sites/github/codeigniter-facebook/application/');
+			// $this->load->add_package_path('/Users/elliot/sites/github/codeigniter-facebook/application/');
 			$this->load->library('facebook');
 
 			if ( !$this->facebook->logged_in() )
@@ -40,16 +40,14 @@
 				
 				// The user is logged in, so we can make API requests on their behalf
 				
-				$event_id = '111111111111';
-				
-				$event = $this->facebook->call('get', $event_id);
+				// $event_id = '111111111111';
+				// $event = $this->facebook->call('get', $event_id);
 				
 				// Set the user as 'attending'
 				// Requires 'scope' to be include 'rsvp_event' in facebook config file.
+				// $request = $this->facebook->call('post', $event_id.'/attending');
 				
-				$request = $this->facebook->call('post', $event_id.'/attending');
-				
-				var_dump($request);
+				// var_dump($request);
 			}
 
 			// We can use the open graph place meta data in the head.

@@ -61,7 +61,7 @@
 		</div>
 		<?php if ( $this->facebook->logged_in() ):?>
 			<fb:like></fb:like>
-			<?php $result = $this->facebook->call('me', array('metadata' => 1));?>
+			<?php $result = $this->facebook->call('get', 'me', array('metadata' => 1));?>
 			<pre>
 				<?php var_dump($result);?>
 			</pre>
