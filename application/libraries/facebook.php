@@ -427,7 +427,6 @@
 			}
 			
 			if ( !$this->_get('callback') ) $this->_set('callback', current_url());
-			
 			$token_url = $this->_token_url.'?client_id='.$this->_api_key."&client_secret=".$this->_api_secret."&code=".$_GET['code'].'&redirect_uri='.urlencode($this->_get('callback'));
 			
 			try 
@@ -460,32 +459,18 @@
 		private function _get($key)
 		{
 			$key = '_facebook_'.$key;
-			
-			if ( isset($this->_data[$key]) && $this->_data[$key] !== NULL) return $this->_data[$key];
-			
-			$data = $this->_obj->session->userdata($key);
-			
-			if ( !empty($data) )
-			{
-				$this->_set($key, $data);
-			}
-			
-			return $data;
+			return $this->_obj->session->userdata($key);
 		}
 		
 		private function _set($key, $data)
 		{
 			$key = '_facebook_'.$key;
-			
-			$this->_data[$key] = $data;
 			$this->_obj->session->set_userdata($key, $data);
 		}
 		
 		private function _unset($key)
 		{
 			$key = '_facebook_'.$key;
-			
-			$this->_data[$key] = NULL;
 			$this->_obj->session->unset_userdata($key);
 		}
 		
