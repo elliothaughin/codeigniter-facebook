@@ -354,6 +354,11 @@
 		
 		public function login_url($scope = NULL)
 		{
+			if( !empty($this->_canvas_url) )
+			{
+				$this->_set('callback', $this->_canvas_url);
+			}
+			
 			$url = "http://www.facebook.com/dialog/oauth?client_id=".$this->_api_key.'&redirect_uri='.urlencode($this->_get('callback'));
 			
 			if ( empty($scope) )
