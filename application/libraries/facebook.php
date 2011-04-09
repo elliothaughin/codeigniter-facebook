@@ -362,10 +362,6 @@
 			else
 			{
 				$this->_set('scope', $scope);
-			}
-			
-			if ( !empty($scope) )
-			{
 				$url .= '&scope='.$scope;
 			}
 			
