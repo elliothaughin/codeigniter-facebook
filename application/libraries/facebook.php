@@ -325,6 +325,7 @@
 			
 			$this->_api_key 	= $this->_obj->config->item('facebook_app_id');
 			$this->_api_secret 	= $this->_obj->config->item('facebook_api_secret');
+			$this->_canvas_url 	= $this->_obj->config->item('facebook_canvas_url');
 			
 			$this->_token_url 	= $this->_obj->config->item('facebook_api_url').$this->_token_url;
 			$this->_user_url 	= $this->_obj->config->item('facebook_api_url').$this->_user_url;
