@@ -20,6 +20,7 @@
 			$this->_api_url 	= $this->_obj->config->item('facebook_api_url');
 			$this->_api_key 	= $this->_obj->config->item('facebook_app_id');
 			$this->_api_secret 	= $this->_obj->config->item('facebook_api_secret');
+			$this->_canvas_url 	= $this->_obj->config->item('facebook_canvas_url');
 			
 			$this->session = new facebookSession();
 			$this->connection = new facebookConnection();
