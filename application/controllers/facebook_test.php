@@ -1,13 +1,14 @@
 <?php
-	class Facebook_test extends CI_Controller {
+	class facebook_test extends CI_Controller {
 		
 		function __construct()
 		{
 			parent::__construct();
 			
 			// $this->load->add_package_path('/Users/elliot/github/codeigniter-facebook/application/');
-			$this->load->library('facebook');
-			$this->facebook->enable_debug(TRUE);
+			$this->load->library('facebook_api');
+			$this->load->helper('facebook');
+			$this->facebook_api->enable_debug(TRUE);
 		}
 		
 		function index()
@@ -33,27 +34,27 @@
 		function login()
 		{
 			// This is the easiest way to keep your code up-to-date. Use git to checkout the 
-			// codeigniter-facebook repo to a location outside of your site directory.
+			// codeigniter-facebook_api repo to a location outside of your site directory.
 			// 
 			// Add the 'application' directory from the repo as a package path:
 			// $this->load->add_package_path('/var/www/haughin.com/codeigniter-facebook/application/');
 			// 
 			// Then when you want to grab a fresh copy of the code, you can just run a git pull 
-			// on your codeigniter-facebook directory.
+			// on your codeigniter-facebook_api directory.
 
-			if ( !$this->facebook->logged_in() )
+			if ( !$this->facebook_api->logged_in() )
 			{
 				// From now on, when we call login() or login_url(), the auth
 				// will redirect back to this url.
 
-				$this->facebook->set_callback(site_url('facebook_test'));
+				$this->facebook_api->set_callback(site_url('facebook_test'));
 
 				// Header redirection to auth.
 
-				$this->facebook->login();
+				$this->facebook_api->login();
 
 				// You can alternatively create links in your HTML using
-				// $this->facebook->login_url(); as the href parameter.
+				// $this->facebook_api->login_url(); as the href parameter.
 			}
 			else
 			{
@@ -63,7 +64,7 @@
 		
 		function logout()
 		{
-			$this->facebook->logout();
+			$this->facebook_api->logout();
 			redirect('facebook_test');
 		}
 	}
