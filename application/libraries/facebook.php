@@ -59,7 +59,7 @@
 				switch ( $method )
 				{
 					case 'get':
-						$response = $this->connection->get($this->append_token($this->_api_url.$uri));
+						$response = $this->connection->get($this->append_token($this->_api_url.$uri), $data);
 					break;
 					
 					case 'post':
@@ -139,7 +139,8 @@
 		{
 			if ( count($params) > 0 )
 			{
-				$url .= '?';
+				//$url .= '?';
+				$url .= '&';
 			
 				foreach( $params as $k => $v )
 				{
