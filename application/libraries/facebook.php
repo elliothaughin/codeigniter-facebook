@@ -20,6 +20,7 @@
 			$this->_api_url 	= $this->_obj->config->item('facebook_api_url');
 			$this->_api_key 	= $this->_obj->config->item('facebook_app_id');
 			$this->_api_secret 	= $this->_obj->config->item('facebook_api_secret');
+			$this->_canvas_url 	= $this->_obj->config->item('facebook_canvas_url');
 			
 			$this->session = new facebookSession();
 			$this->connection = new facebookConnection();
@@ -353,6 +354,11 @@
 		
 		public function login_url($scope = NULL)
 		{
+			if( !empty($this->_canvas_url) )
+			{
+				$this->_set('callback', $this->_canvas_url);
+			}
+			
 			$url = "http://www.facebook.com/dialog/oauth?client_id=".$this->_api_key.'&redirect_uri='.urlencode($this->_get('callback'));
 			
 			if ( empty($scope) )
@@ -362,10 +368,6 @@
 			else
 			{
 				$this->_set('scope', $scope);
-			}
-			
-			if ( !empty($scope) )
-			{
 				$url .= '&scope='.$scope;
 			}
 			
