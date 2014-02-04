@@ -342,7 +342,7 @@
 		
 		public function logged_in()
 		{
-			return ( $this->get() === NULL ) ? FALSE : TRUE;
+			return ( $this->get() === NULL );
 		}
 		
 		public function logout()
