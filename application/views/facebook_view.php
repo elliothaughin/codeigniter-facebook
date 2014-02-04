@@ -50,15 +50,15 @@
 	</head>
 	<body>
 		<div class="my-account">
-		<?php if ( !$this->facebook->logged_in() ): ?>
-			<a href="<?php echo $this->facebook->login_url()?>">Login</a>
+		<?php if ( !$this->facebook_api->logged_in() ): ?>
+			<a href="<?php echo $this->facebook_api->login_url()?>">Login</a>
 			<fb:facepile></fb:facepile>
 		<?php else:?>
 			<img class="avatar" src="<?php echo facebook_picture('me')?>" />
-			<?php $user = $this->facebook->user();?>
+			<?php $user = $this->facebook_api->user();?>
 			<h2><?php echo $user->name?> ( <a href="<?php echo site_url('facebook_test/logout')?>">Logout</a> )</h2>
 			<fb:like></fb:like>
-			<?php $result = $this->facebook->call('get', 'me', array('metadata' => 1));?>
+			<?php $result = $this->facebook_api->call('get', 'me', array('metadata' => 1));?>
 			<pre>
 				<?php var_dump($result);?>
 			</pre>
