@@ -18,13 +18,13 @@
 			// 
 			// For more details see: http://developers.facebook.com/docs/opengraph
 			
-			$opengraph = 	array(
-								'type'				=> 'website',
-								'title'				=> 'My Awesome Site',
-								'url'				=> site_url(),
-								'image'				=> '',
-								'description'		=> 'The best site in the whole world'
-							);
+			$opengraph = array(
+			    'type' => 'website',
+			    'title' => 'My Awesome Site',
+			    'url' => site_url(),
+			    'image' => '',
+			    'description' => 'The best site in the whole world'
+			);
 
 			$this->load->vars('opengraph', $opengraph);
 			$this->load->view('facebook_view');
