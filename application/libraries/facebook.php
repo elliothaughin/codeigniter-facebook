@@ -139,14 +139,7 @@
 		{
 			if ( count($params) > 0 )
 			{
-				$url .= '?';
-			
-				foreach( $params as $k => $v )
-				{
-					$url .= "{$k}={$v}&";
-				}
-				
-				$url = substr($url, 0, -1);
+				$url .= '?' . http_build_query($params);
 			}
 			
 			$this->_initConnection($url);
@@ -157,15 +150,7 @@
 		
 		public function post($url, $params = array())
 		{
-			// Todo
-			$post = '';
-			
-			foreach ( $params as $k => $v )
-			{
-				$post .= "{$k}={$v}&";
-			}
-			
-			$post = substr($post, 0, -1);
+			$post = http_build_query($params);
 			
 			$this->_initConnection($url, $params);
 			curl_setopt($this->_ch, CURLOPT_POST, 1);
