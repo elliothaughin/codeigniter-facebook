@@ -408,6 +408,8 @@
 		private function _find_token()
 		{
 			$token = $this->_get('token');
+			// Uncomment if you work in localhost.com
+			//$token = unserialize (serialize ($this->_get('token')));
 			
 			if ( !empty($token) )
 			{
